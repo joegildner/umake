@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <string.h>
 
 /* CONSTANTS */
 
@@ -112,7 +113,14 @@ void processline (char* line) {
 }
 
 char** arg_parse(char* line){
-  char** arg_array = malloc(count_args(line) * sizeof(char*));
+  int argCount = count_args(line);
+  char* placePointers = line;
+  char** argArray = malloc(argCount * sizeof(char*));
+  printf("%s",placePointers);
+  for(int i=0; i<argCount; i++){
+    argArray[i] = placePointers;
+    placePointers+=strlen(placePointers);
+  }
 
 }
 
@@ -124,6 +132,7 @@ int count_args(char* line){
   while(*countString != '\0'){
     if(*countString == ' ' && firstSpace){
       argCount++;
+      *countString = '\0';
       firstSpace = false;
     }
     else if(*countString != ' '){
