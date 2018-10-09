@@ -1,5 +1,7 @@
 /* CSCI 347 micro-make
- * 
+ * 08 OCT 2018, Joe Gildner
+ *
+ * Forked from starter project written by
  * 09 AUG 2017, Aran Clauson
  */
 
