@@ -41,7 +41,9 @@ char** arg_parse(char* line);
  * the leading tab.
  */
 int main(int argc, const char* argv[]) {
+  arg_parse("hello darkness my old friend");
 
+  /*
   FILE* makefile = fopen("./uMakefile", "r");
 
   size_t  bufsize = 0;
@@ -63,15 +65,13 @@ int main(int argc, const char* argv[]) {
   }
 
   free(line);
+  */
   return EXIT_SUCCESS;
 }
 
 
-/* Process Line
- * line   the command line which the program will run, arguments included.
- * The processLine function takes a command line and seperates it into its individual string
- * arguments, then runs the command with the arguments taken into account
- */
+/* 
+*/
 void processline (char* line) {
   char** com = arg_parse(line);
   const pid_t cpid = fork();
@@ -105,5 +105,16 @@ void processline (char* line) {
 }
 
 char** arg_parse(char* line){
-  return NULL;
+
+  char* countString = line;
+  int argCount =0;
+
+  while(*countString != '\0'){
+    if(*countString == ' ')
+      argCount++;
+    countString++;
+  }
+  
+  printf("%d\n", argCount);
+
 }
