@@ -48,10 +48,7 @@ int count_args(char* line);
  * character ('\t') are interpreted as a command and passed to processline minus
  * the leading tab.
  */
-int main(int argc, const char* argv[]) {
-  arg_parse("      cd   home    -ls    ");
-
-  /*
+int main(int argc, const char* argv[]) { 
   FILE* makefile = fopen("./uMakefile", "r");
 
   size_t  bufsize = 0;
@@ -73,7 +70,7 @@ int main(int argc, const char* argv[]) {
   }
 
   free(line);
-  */
+  
   return EXIT_SUCCESS;
 }
 
@@ -116,11 +113,13 @@ char** arg_parse(char* line){
   int argCount = count_args(line);
   char* placePointers = line;
   char** argArray = malloc(argCount * sizeof(char*));
-  printf("%s",placePointers);
+
   for(int i=0; i<argCount; i++){
     argArray[i] = placePointers;
-    placePointers+=strlen(placePointers);
+    placePointers+=strlen(placePointers)+1; //move to next string in the line
   }
+
+  return argArray;
 
 }
 
@@ -132,7 +131,7 @@ int count_args(char* line){
   while(*countString != '\0'){
     if(*countString == ' ' && firstSpace){
       argCount++;
-      *countString = '\0';
+      *countString = '\0'; // seperate each argument by the null character
       firstSpace = false;
     }
     else if(*countString != ' '){
@@ -143,6 +142,7 @@ int count_args(char* line){
   if(firstSpace){
     argCount++;
   }
+  
 
   return argCount;
 }

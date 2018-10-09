@@ -1,5 +1,2 @@
-	pwd
-	ls
-	pwd
-	who
+	ls -la 
 
