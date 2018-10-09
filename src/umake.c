@@ -5,7 +5,7 @@
  * 09 AUG 2017, Aran Clauson
  */
 
-
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -19,20 +19,27 @@
 /* Process Line
  * line   The command line to execute.
  * This function interprets line as a command line.  It creates a new child
- * process to execute the line and waits for that process to complete. 
+ * process to execute the line and waits for that process to complete.
  */
 void processline(char* line);
 
 
 /* arg parse
  * line   the command line to extract individual arguments from.
- * This function is used to convert a command line into an array of char pointers, 
+ * This function is used to convert a command line into an array of char pointers,
  * where each pointer is the beginning of an argument or flag.
  */
 char** arg_parse(char* line);
 
+/* Count args
+ * line   command line to count the arguments in
+ * the Count args function takes a command line argument and counts each
+ * individual argument, where whitespace is the delimiter
+ */
+int count_args(char* line);
+
 /* Main entry point.
- * argc    A count of command-line arguments 
+ * argc    A count of command-line arguments
  * argv    The command-line argument valus
  *
  * Micro-make (umake) reads from the uMakefile in the current working
@@ -41,7 +48,7 @@ char** arg_parse(char* line);
  * the leading tab.
  */
 int main(int argc, const char* argv[]) {
-  arg_parse("hello darkness my old friend");
+  arg_parse("      cd   home    -ls    ");
 
   /*
   FILE* makefile = fopen("./uMakefile", "r");
@@ -49,7 +56,7 @@ int main(int argc, const char* argv[]) {
   size_t  bufsize = 0;
   char*   line    = NULL;
   ssize_t linelen = getline(&line, &bufsize, makefile);
-  
+
   while(-1 != linelen) {
 
     if(line[linelen-1]=='\n') {
@@ -57,7 +64,7 @@ int main(int argc, const char* argv[]) {
       line[linelen] = '\0';
     }
 
-    if(line[0] == '\t') 
+    if(line[0] == '\t')
       processline(&line[1]);
 
 
@@ -70,7 +77,7 @@ int main(int argc, const char* argv[]) {
 }
 
 
-/* 
+/*
 */
 void processline (char* line) {
   char** com = arg_parse(line);
@@ -105,16 +112,28 @@ void processline (char* line) {
 }
 
 char** arg_parse(char* line){
+  char** arg_array = malloc(count_args(line) * sizeof(char*));
 
+}
+
+int count_args(char* line){
   char* countString = line;
   int argCount =0;
+  bool firstSpace = false;
 
   while(*countString != '\0'){
-    if(*countString == ' ')
+    if(*countString == ' ' && firstSpace){
       argCount++;
+      firstSpace = false;
+    }
+    else if(*countString != ' '){
+      firstSpace = true;
+    }
     countString++;
   }
-  
-  printf("%d\n", argCount);
+  if(firstSpace){
+    argCount++;
+  }
 
+  return argCount;
 }
