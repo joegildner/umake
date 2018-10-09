@@ -23,6 +23,14 @@
  */
 void processline(char* line);
 
+
+/* arg parse
+ * line   the command line to extract individual arguments from.
+ * This function is used to convert a command line into an array of char pointers, 
+ * where each pointer is the beginning of an argument or flag.
+ */
+char** arg_parse(char* line);
+
 /* Main entry point.
  * argc    A count of command-line arguments 
  * argv    The command-line argument valus
@@ -60,36 +68,42 @@ int main(int argc, const char* argv[]) {
 
 
 /* Process Line
- * 
+ * line   the command line which the program will run, arguments included.
+ * The processLine function takes a command line and seperates it into its individual string
+ * arguments, then runs the command with the arguments taken into account
  */
 void processline (char* line) {
-  
+  char** com = arg_parse(line);
   const pid_t cpid = fork();
   switch(cpid) {
 
-  case -1: {
-    perror("fork");
-    break;
-  }
-
-  case 0: {
-    execlp(line, line, (char*)(0));
-    perror("execlp");
-    exit(EXIT_FAILURE);
-    break;
-  }
-
-  default: {
-    int   status;
-    const pid_t pid = wait(&status);
-    if(-1 == pid) {
-      perror("wait");
+    case -1: {
+      perror("fork");
+      break;
     }
-    else if (pid != cpid) {
-      fprintf(stderr, "wait: expected process %d, but waited for process %d",
-              cpid, pid);
+
+    case 0: {
+      execlp(line, line, (char*)(0));
+      perror("execlp");
+      exit(EXIT_FAILURE);
+      break;
     }
-    break;
+
+    default: {
+      int   status;
+      const pid_t pid = wait(&status);
+      if(-1 == pid) {
+        perror("wait");
+      }
+      else if (pid != cpid) {
+        fprintf(stderr, "wait: expected process %d, but waited for process %d",
+          cpid, pid);
+      }
+      break;
+    }
   }
-  }
+}
+
+char** arg_parse(char* line){
+  return NULL;
 }
