@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <string.h>
+#include <ctype.h>
 
 /* CONSTANTS */
 
@@ -59,7 +60,7 @@ int main(int argc, const char* argv[]) {
 
     if(line[linelen-1]=='\n') {
       linelen -= 1;
-      line[linelen] = '\0';
+      line[linelen] = '\0'; 
     }
 
     if(line[0] == '\t')
@@ -78,7 +79,7 @@ int main(int argc, const char* argv[]) {
 /*
 */
 void processline (char* line) {
-  char** com = arg_parse(line);
+  char** commandArgs = arg_parse(line); //Array containing command along with its arguments
   const pid_t cpid = fork();
   switch(cpid) {
 
@@ -88,8 +89,8 @@ void processline (char* line) {
     }
 
     case 0: {
-      execlp(line, line, (char*)(0));
-      perror("execlp");
+      execvp(commandArgs[0],commandArgs);
+      perror("execvp");
       exit(EXIT_FAILURE);
       break;
     }
@@ -104,17 +105,24 @@ void processline (char* line) {
         fprintf(stderr, "wait: expected process %d, but waited for process %d",
           cpid, pid);
       }
+      free(commandArgs);
       break;
     }
   }
 }
 
+/*
+* TODO: Remove the debugging printline in the for loop
+*/
 char** arg_parse(char* line){
   int argCount = count_args(line);
   char* placePointers = line;
-  char** argArray = malloc(argCount * sizeof(char*));
+  char** argArray = malloc((argCount+1) * sizeof(char*));
 
   for(int i=0; i<argCount; i++){
+    while(isspace(*placePointers)){
+      placePointers++;
+    }
     argArray[i] = placePointers;
     placePointers+=strlen(placePointers)+1; //move to next string in the line
   }
@@ -127,14 +135,14 @@ int count_args(char* line){
   char* countString = line;
   int argCount =0;
   bool firstSpace = false;
-
+ 
   while(*countString != '\0'){
-    if(*countString == ' ' && firstSpace){
+    if(isspace(*countString) && firstSpace){
       argCount++;
       *countString = '\0'; // seperate each argument by the null character
       firstSpace = false;
     }
-    else if(*countString != ' '){
+    else if(!isspace(*countString)){
       firstSpace = true;
     }
     countString++;
