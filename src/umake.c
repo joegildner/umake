@@ -66,7 +66,8 @@ int main(int argc, const char* argv[]) {
 void processline (char* line) {
   int argc;
   char** commandArgs = arg_parse(line, &argc);
-  const pid_t cpid = fork();
+  const pid_t cpid;
+  if(*argc == 0) = fork();
   switch(cpid) {
     case -1: {
       perror("fork");
