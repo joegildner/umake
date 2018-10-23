@@ -81,7 +81,7 @@ int main(int argc, const char* argv[]) {
 /*
 */
 void processline (char* line) {
-  char** commandArgs = arg_parse(line); //Array containing command along with its arguments
+  char** commandArgs = arg_parse(line);
   const pid_t cpid = fork();
   switch(cpid) {
     case -1: {
@@ -106,10 +106,10 @@ void processline (char* line) {
         fprintf(stderr, "wait: expected process %d, but waited for process %d",
           cpid, pid);
       }
-      free(commandArgs);
       break;
     }
   }
+  free(commandArgs);
 }
 
 /* arg_parse
@@ -120,20 +120,15 @@ void processline (char* line) {
  */
 char** arg_parse(char* line){
   int argCount = count_args(line);
-  char* placePointers = line; //pointer for parsing line
-
-  //allocate enough memory to point to each argument, plus one to make the array
-  //null terminated as required by execvp
+  char* placePointers = line;
   char** argArray = malloc((argCount+1) * sizeof(char*));
 
   for(int i=0; i<argCount; i++){
-    //ignore whitespace between arguments
     while(isspace(*placePointers)){
       placePointers++;
     }
     argArray[i] = placePointers;
-    //each argument in line is terminated by a '\0', si use strlen() to find the
-    // distance to the end and skip to just after that point
+    argArray[i+1] = NULL;
     placePointers+=strlen(placePointers)+1;
   }
 
@@ -153,22 +148,17 @@ int count_args(char* line){
   bool firstSpace = false;
 
   while(*countString != '\0'){
-    //case of interest: if countString is pointing to the first space after
-    //a series of non space characters, then this must be the end of an argument
-    if(isspace(*countString) && firstSpace){
+  if(isspace(*countString) && firstSpace){
       argCount++;
-      *countString = '\0'; // seperate each argument by the null character
+      *countString = '\0';
       firstSpace = false;
     }
-    //Once we reach a non space after a period of spaces, we must be at a new
-    //argument, set the firstSpace flag to true to catch the end of the argument
     else if(!isspace(*countString)){
       firstSpace = true;
     }
     countString++;
   }
-  //final check: if the null character at the end of line came directly after an
-  // argument, be sure to tally that last argument
+
   if(firstSpace){
     argCount++;
   }
