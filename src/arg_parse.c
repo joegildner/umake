@@ -10,12 +10,12 @@
  * strings, where the first string is the command and all sequential strings are
  * arguments for that command
  */
-char** arg_parse(char* line){
-  int argCount = count_args(line);
+char** arg_parse(char* line, int *argcp){
+  *argcp = count_args(line);
   char* placePointers = line;
-  char** argArray = malloc((argCount+1) * sizeof(char*));
+  char** argArray = malloc((*argcp+1) * sizeof(char*));
 
-  for(int i=0; i<argCount; i++){
+  for(int i=0; i<*argcp; i++){
     while(isspace(*placePointers)){
       placePointers++;
     }

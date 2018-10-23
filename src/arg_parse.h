@@ -3,12 +3,14 @@
 #include <string.h>
 #include <ctype.h>
 
-/* arg parse
+/* PROTOTYPES */
+
+/* Arg parse
  * line   the command line to extract individual arguments from.
  * This function is used to convert a command line into an array of char pointers,
  * where each pointer is the beginning of an argument or flag.
  */
-char** arg_parse(char* line);
+char** arg_parse(char* line, int *argcp);
 
 
 /* Count args
