@@ -35,7 +35,7 @@ char** arg_parse(char* line, int *argcp){
  * arg_parse function can easily distinguish the seperate arguments
  */
 int count_args(char* line){
-  char* countString = line; //char pointer to parse line
+  char* countString = line;
   int argCount =0;
   bool firstSpace = false;
 
