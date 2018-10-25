@@ -4,8 +4,6 @@
 * Forked from starter project written by
 * 09 AUG 2017, Aran Clauson
 */
-
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

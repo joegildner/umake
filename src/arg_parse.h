@@ -1,8 +1,5 @@
-#include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-
+#ifndef ARG_PARSE
+#define ARG_PARSE
 /* PROTOTYPES */
 
 /* Arg parse
@@ -19,4 +16,5 @@ char** arg_parse(char* line, int *argcp);
  * individual argument, where whitespace is the delimiter
  */
 int count_args(char* line);
- 
+
+#endif
