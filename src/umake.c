@@ -10,6 +10,7 @@
 #include <sys/wait.h>
 
 #include "arg_parse.h"
+#include "targets.h"
 
 /* CONSTANTS */
 
@@ -39,12 +40,17 @@ int main(int argc, const char* argv[]) {
   char*   line    = NULL;
   ssize_t linelen = getline(&line, &bufsize, makefile);
 
+
+
   while(-1 != linelen) {
 
     if(line[linelen-1]=='\n') {
       linelen -= 1;
       line[linelen] = '\0';
     }
+
+    if(line[0] == ' ')
+    processline(&line[1]);
 
     if(line[0] == '\t')
     processline(&line[1]);
