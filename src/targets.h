@@ -1,14 +1,19 @@
 #ifndef TARGETS
 #define TARGETS
 
-typedef struct target_st target;
-typedef struct rule_st rule;
+typedef struct target_st targetList;
+typedef struct rule_st ruleList;
 
-target* addtarget(target* firsttarg, char* targline);
+ruleList* new_ruleList(char* ruleLine);
+targetList* new_targetList(char* ruleLine);
 
-rule* target_addrule(target* target, char* ruleline);
-rule* rule_addrule(rule* firstrule, char* ruleline);
+targetList* addtarget(targetList* firstTarg, char* targLine);
 
-target* nexttarget(target* targ);
+ruleList* t_addrule(targetList* firstTarg, char* ruleLine);
+ruleList* addrule(ruleList* firstrule, char* ruleLine);
+
+targetList* nexttarget(targetList* targ);
+
+void printRules(ruleList* rules);
 
 #endif
