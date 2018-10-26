@@ -73,11 +73,23 @@ ruleList* addrule(ruleList* firstRule, char* ruleLine){
 
   lastRule->nextRule = new_ruleList(ruleLine);
 
-  return lastRule;
+  return lastRule->nextRule;
+}
+
+ruleList* getRuleList(targetList* target){
+  return target->targRules;
 }
 
 targetList* add_target(targetList* firstTarg, char* targLine){
-  return NULL;
+  targetList* lastTarg = firstTarg;
+
+  while(lastRule->nextRule != NULL){
+    lastTarg = lastTarg->nextTarg;
+  }
+
+  lastTarg->nextTarg = new_targetList(targLine);
+
+  return lastTarg->nextTarg;
 }
 
 void printRules(ruleList* rules){

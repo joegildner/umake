@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
-
+#include <ctype.h>
 #include "arg_parse.h"
 #include "targets.h"
 
@@ -40,7 +40,8 @@ int main(int argc, const char* argv[]) {
   char*   line    = NULL;
   ssize_t linelen = getline(&line, &bufsize, makefile);
 
-
+  targetList* targets;
+  ruleList* targetRules = getRuleList(currentTarget);
 
   while(-1 != linelen) {
 
@@ -49,8 +50,7 @@ int main(int argc, const char* argv[]) {
       line[linelen] = '\0';
     }
 
-    if(line[0] == ' ')
-    processline(&line[1]);
+    if(!isspace(line[0]));
 
     if(line[0] == '\t')
     processline(&line[1]);
