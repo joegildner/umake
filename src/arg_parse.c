@@ -28,7 +28,6 @@ char** arg_parse(char* line, int *argcp){
     argArray[i+1] = NULL;
     placePointers+=strlen(placePointers)+1;
   }
-
   return argArray;
 }
 

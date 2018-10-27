@@ -7,14 +7,17 @@ typedef struct rule_st ruleList;
 ruleList* new_ruleList(char* ruleLine);
 targetList* new_targetList();
 
-void targpush(targetList* headTarg, char* targLine);
+void targpush(targetList** firstTarg, char* targLine);
+void addtarget(targetList** head, char* ruleLine);
 
-targetList* addtarget(targetList* firstTarg, char* targLine);
-void addrule(ruleList** rules, char* ruleLine);
+void t_addrule(targetList* target, char* ruleLine);
+void addrule(ruleList** target, char* ruleLine);
 
 ruleList* getRuleList(targetList* thisTarget);
-
 targetList* nexttarget(targetList* targ);
+
+void findtarget(char* argument);
+void execrules(char* argument);
 
 void printRules(ruleList* rules);
 void printTargs(targetList* targs);

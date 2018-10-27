@@ -54,15 +54,20 @@ int main(int argc, const char* argv[]) {
 
     int lineType = getlinetype(line);
     if(lineType == 0){
-      targpush(targets,line);
-      printf("target\n");
+      targpush(&targets,line);
+      //printTargs(targets);
     }
     else if(lineType == 1){
-      addrule(targets, line);
-      printf("rule\n");
+      t_addrule(targets, line);
     }
 
     linelen = getline(&line, &bufsize, makefile);
+  }
+
+  printTargs(targets);
+
+  for(int i=1; i<argc; i++){
+    execrules(argv[i]);
   }
 
   free(line);
@@ -123,15 +128,14 @@ void processline (char* line) {
  * 2 for other
  */
 int getlinetype(char* line){
-  char* lineIterator = line;
   int lineType = 2;
 
-  while(lineIterator[0] == ' '){
-    lineIterator++;
+  while(line[0] == ' '){
+    line++;
   }
 
-  if(lineIterator[0] == '\t') lineType = 1;
-  else if(isalpha(lineIterator[0])) lineType = 0;
+  if(line[0] == '\t') lineType = 1;
+  else if(isalpha(line[0])) lineType = 0;
   else lineType =2;
 
   return lineType;

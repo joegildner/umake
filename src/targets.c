@@ -5,6 +5,7 @@
 #include "arg_parse.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 /* How the data structure works
 *  ______________      ______________
@@ -25,7 +26,7 @@
 
 struct target_st{
   targetList* nextTarg;
-  char** targArgs;
+  char* targArgs;
   ruleList* targRules;
 };
 
@@ -34,22 +35,27 @@ struct rule_st{
   char* rule;
 };
 
-
-void targpush(targetList* firstTarg, char* targLine){
+void targpush(targetList** firstTarg, char* targLine){
   targetList* newTarg = malloc(sizeof(targetList));
-  int argc;
+  //int argc;
 
-  newTarg->nextTarg = firstTarg;
-  newTarg->targArgs = arg_parse(targLine, &argc);
+  newTarg->nextTarg = *firstTarg;
+  newTarg->targArgs = malloc(strlen(targLine) * sizeof(char*));
+  strcpy(newTarg->targArgs,targLine);
   newTarg->targRules = NULL;
 
-  firstTarg = newTarg;
+  *firstTarg = newTarg;
+}
+
+void t_addrule(targetList* target, char* ruleLine){
+  addrule(&target->targRules,ruleLine);
 }
 
 void addrule(ruleList** head, char* ruleLine){
   ruleList* next = malloc(sizeof(ruleList));
   next->nextRule = NULL;
-  next->rule = ruleLine;
+  next->rule = malloc(strlen(ruleLine)*sizeof(char*));
+  strcpy(next->rule,ruleLine);
 
   if(*head == NULL){
     *head = next;
@@ -71,6 +77,14 @@ targetList* nexttarget(targetList* original){
   return original->nextTarg;
 }
 
+void execrules(char* argument){
+  targetList* thisTarget = findtarget(argument);
+}
+
+targetList* findtarget(char* argument){
+
+}
+
 void printRules(ruleList* rules){
   ruleList* thisRule = rules;
   while(thisRule->nextRule != NULL){
@@ -81,9 +95,9 @@ void printRules(ruleList* rules){
 }
 
 void printTargs(targetList* targs){
-  targetList* thisTarg = targs;
-  while(thisTarg->nextTarg != NULL){
-    printf("%s\n", thisTarg->targArgs[0]);
-    thisTarg = thisTarg->nextTarg;
+  while(targs!= NULL){
+    printf("%s\n", targs->targArgs);
+    printRules(targs->targRules);
+    targs = targs->nextTarg;
   }
 }
