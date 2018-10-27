@@ -37,10 +37,12 @@ struct rule_st{
 
 void targpush(targetList** firstTarg, char* targLine){
   targetList* newTarg = malloc(sizeof(targetList));
-  //int argc;
+  int argc;
 
   newTarg->nextTarg = *firstTarg;
-  newTarg->targArgs = malloc(strlen(targLine) * sizeof(char*));
+  char** targArgs = arg_parse(targLine,&argc);
+  newTarg->targArgs = malloc((argc+1) * sizeof(char*));
+  memcpy(newTarg->targArgs, targArgs, (argc+1) * sizeof(char*));
   strcpy(newTarg->targArgs,targLine);
   newTarg->targRules = NULL;
 
@@ -77,12 +79,15 @@ targetList* nexttarget(targetList* original){
   return original->nextTarg;
 }
 
-void execrules(char* argument){
-  targetList* thisTarget = findtarget(argument);
-}
 
-targetList* findtarget(char* argument){
-
+void findtargetrules(char* argument, targetList* targets, ruleList** rules){
+  targetList thisTarget = NULL;
+  while(targets != NULL){
+    if(strcmp(argument,targets->targArgs)==0){
+      thisTarget = targets;
+    }
+  }
+  *rules = thisTarget->targRules;
 }
 
 void printRules(ruleList* rules){

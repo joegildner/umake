@@ -16,8 +16,7 @@ void addrule(ruleList** target, char* ruleLine);
 ruleList* getRuleList(targetList* thisTarget);
 targetList* nexttarget(targetList* targ);
 
-void findtarget(char* argument);
-void execrules(char* argument);
+void findtargetrules(char* argument, targetList* targets);
 
 void printRules(ruleList* rules);
 void printTargs(targetList* targs);

@@ -44,6 +44,7 @@ int count_args(char* line){
   bool firstSpace = false;
 
   while(*countString != '\0'){
+    if(*countString == ':') *countString = ' ';
   if(isspace(*countString) && firstSpace){
       argCount++;
       *countString = '\0';

@@ -18,6 +18,8 @@
 
 /* PROTOTYPES */
 
+void processrules(ruleList* rules);
+
 int getlinetype(char* line);
 
 /* Process Line
@@ -36,7 +38,7 @@ void processline(char* line);
 * character ('\t') are interpreted as a command and passed to processline minus
 * the leading tab.
 */
-int main(int argc, const char* argv[]) {
+int main(int argc, char* argv[]) {
   FILE* makefile = fopen("./uMakefile", "r");
 
   size_t  bufsize = 0;
@@ -66,9 +68,13 @@ int main(int argc, const char* argv[]) {
 
   printTargs(targets);
 
+
   for(int i=1; i<argc; i++){
-    execrules(argv[i]);
+    ruleList* rules = NULL;
+    rules = findtargetrules(argv[i],targets);
+    processrules(rules);
   }
+
 
   free(line);
 
