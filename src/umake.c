@@ -43,7 +43,7 @@ int main(int argc, const char* argv[]) {
   char*   line    = NULL;
   ssize_t linelen = getline(&line, &bufsize, makefile);
 
-  //targetList* targets = NULL;
+  targetList* targets = NULL;
 
   while(-1 != linelen) {
 
@@ -53,10 +53,14 @@ int main(int argc, const char* argv[]) {
     }
 
     int lineType = getlinetype(line);
-    if(lineType == 0) printf("target\n");
-    if(lineType == 1) printf("rule\n");
-    if(lineType == 2) printf("blank\n");
-
+    if(lineType == 0){
+      targpush(targets,line);
+      printf("target\n");
+    }
+    else if(lineType == 1){
+      addrule(targets, line);
+      printf("rule\n");
+    }
 
     linelen = getline(&line, &bufsize, makefile);
   }

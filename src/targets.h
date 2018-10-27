@@ -10,9 +10,8 @@ targetList* new_targetList();
 void targpush(targetList* headTarg, char* targLine);
 
 targetList* addtarget(targetList* firstTarg, char* targLine);
+void addrule(ruleList** rules, char* ruleLine);
 
-ruleList* t_addrule(targetList* firstTarg, char* ruleLine);
-ruleList* addrule(ruleList* firstrule, char* ruleLine);
 ruleList* getRuleList(targetList* thisTarget);
 
 targetList* nexttarget(targetList* targ);

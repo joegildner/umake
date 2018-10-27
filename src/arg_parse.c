@@ -29,8 +29,6 @@ char** arg_parse(char* line, int *argcp){
     placePointers+=strlen(placePointers)+1;
   }
 
-  printf("%s\n", argArray[0]);
-
   return argArray;
 }
 

@@ -46,25 +46,20 @@ void targpush(targetList* firstTarg, char* targLine){
   firstTarg = newTarg;
 }
 
-ruleList* new_ruleList(char* ruleLine){
-  ruleList* newRules = malloc(sizeof(ruleList));
+void addrule(ruleList** head, char* ruleLine){
+  ruleList* next = malloc(sizeof(ruleList));
+  next->nextRule = NULL;
+  next->rule = ruleLine;
 
-  newRules->nextRule = NULL;
-  newRules->rule = ruleLine;
-
-  return newRules;
-}
-
-ruleList* addrule(ruleList* firstRule, char* ruleLine){
-  ruleList* lastRule = firstRule;
-
-  while(lastRule->nextRule != NULL){
-    lastRule = lastRule->nextRule;
+  if(*head == NULL){
+    *head = next;
+  }else{
+    ruleList* thisNode = *head;
+    while(thisNode->nextRule != NULL){
+      thisNode = thisNode->nextRule;
+    }
+    thisNode->nextRule = next;
   }
-
-  lastRule->nextRule = new_ruleList(ruleLine);
-
-  return lastRule->nextRule;
 }
 
 ruleList* getRuleList(targetList* target){
@@ -77,12 +72,12 @@ targetList* nexttarget(targetList* original){
 }
 
 void printRules(ruleList* rules){
-  ruleList* thisNode = rules;
-  while(thisNode->nextRule != NULL){
-    printf("%s\n", thisNode->rule);
-    thisNode = thisNode->nextRule;
+  ruleList* thisRule = rules;
+  while(thisRule->nextRule != NULL){
+    printf("%s\n", thisRule->rule);
+    thisRule = thisRule->nextRule;
   }
-  printf("%s\n", thisNode->rule);
+  printf("%s\n", thisRule->rule);
 }
 
 void printTargs(targetList* targs){
