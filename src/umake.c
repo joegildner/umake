@@ -6,6 +6,7 @@
 */
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <ctype.h>
@@ -16,6 +17,8 @@
 
 
 /* PROTOTYPES */
+
+int getlinetype(char* line);
 
 /* Process Line
 * line   The command line to execute.
@@ -40,8 +43,7 @@ int main(int argc, const char* argv[]) {
   char*   line    = NULL;
   ssize_t linelen = getline(&line, &bufsize, makefile);
 
-  targetList* targets;
-  ruleList* targetRules = getRuleList(currentTarget);
+  //targetList* targets = NULL;
 
   while(-1 != linelen) {
 
@@ -50,10 +52,10 @@ int main(int argc, const char* argv[]) {
       line[linelen] = '\0';
     }
 
-    if(!isspace(line[0]));
-
-    if(line[0] == '\t')
-    processline(&line[1]);
+    int lineType = getlinetype(line);
+    if(lineType == 0) printf("target\n");
+    if(lineType == 1) printf("rule\n");
+    if(lineType == 2) printf("blank\n");
 
 
     linelen = getline(&line, &bufsize, makefile);
@@ -107,3 +109,27 @@ void processline (char* line) {
   }
   free(commandArgs);
 }
+
+/* get line type
+ * line   makefile line
+ * get line type determines whether we are looking at a target, a rule,
+ * or just a blank line. Skips all leading whitespace
+ * 0 for target
+ * 1 for rule
+ * 2 for other
+ */
+int getlinetype(char* line){
+  char* lineIterator = line;
+  int lineType = 2;
+
+  while(lineIterator[0] == ' '){
+    lineIterator++;
+  }
+
+  if(lineIterator[0] == '\t') lineType = 1;
+  else if(isalpha(lineIterator[0])) lineType = 0;
+  else lineType =2;
+
+  return lineType;
+
+  }

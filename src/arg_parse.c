@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdio.h>
 
 /* arg_parse
  * line   a command line, possibly with arguments included, delimited by whitespace
@@ -27,6 +28,8 @@ char** arg_parse(char* line, int *argcp){
     argArray[i+1] = NULL;
     placePointers+=strlen(placePointers)+1;
   }
+
+  printf("%s\n", argArray[0]);
 
   return argArray;
 }

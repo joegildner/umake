@@ -1,7 +1,9 @@
-echo one 				two three
-	echo one 		two
+umake: umake.o arg_parse.o
+	gcc -o umake-new umake.o arg_parse.o
+	mv -i umake-new umake
 
+umake.o: umake.c arg_parse.h
+	gcc -c umake.c
 
-
-
-	echo two	 three			 one		 two
+arg_parse.o: arg_parse.c arg_parse.h
+	gcc -c arg_parse.c
