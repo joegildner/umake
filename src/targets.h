@@ -1,13 +1,17 @@
 #ifndef LIST
 #define LIST
+/* target list specifications */
+//TODO: add target list specifications...
 
-typedef struct list_st list;
-typedef list* p_list;
 
-void append(p_list* thisList, char* string);
-void print_list(list* thisList);
+/* rule list specifications */
+typedef struct rule_st rules;
+typedef rules* p_rules;
 
-void free_list(p_list* thisList);
-void r_free_list(p_list* thisList);
-void deleteList(p_list* head_ref);
+void addrule(p_rules* rulelist, char* string);
+void print_rules(p_rules rulelist);
+
+void freerules(p_rules* rulelist);
+void r_freerules(p_rules* rulelist);
+
 #endif

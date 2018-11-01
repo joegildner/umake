@@ -24,60 +24,62 @@
 *        NULL                 NULL
 */
 
-struct list_st{
-  list* next;
+
+
+struct rule_st{
+  p_rules next;
   char* data;
 };
 
-/* append
- * plist    pointer to a list
+/* addrule
+ * prules    pointer to a list
  * string   the given string to put in the list
- * append takes a pointer to a list and a string to add to that list and then
+ * addrule takes a pointer to a list and a string to add to that list and then
  * creates a new node with allocated memory and adds a copy of the string to that
- * node. Append then finds the end of plist and adds the new node to it.
+ * node. addrule then finds the end of prules and adds the new node to it.
  */
-void append(p_list* plist, char* string){
-  p_list newNode = malloc(sizeof(list));
+void addrule(p_rules* prules, char* string){
+  p_rules newNode = malloc(sizeof(rules));
 
   newNode->data = strdup(string);
   newNode->next = NULL;
 
-  while(*plist != NULL) plist = &((*plist)->next);
-  *plist = newNode;
+  while(*prules != NULL) prules = &((*prules)->next);
+  *prules = newNode;
 }
 
-/* print_list
+/* print_rules
  * thisList   pointer to a list node (not necessarily the first)
- * print_list steps through each node in the linked list, from thisList onward,
+ * print_rules steps through each node in the linked list, from thisList onward,
  * and prints the data at each node until reaching the end
  */
-void print_list(list* thisList){
-
-  while(thisList != NULL){
-    printf("%s\n", thisList->data);
-    thisList = thisList->next;
+void print_rules(p_rules list){
+  while(list != NULL){
+    printf("%s\n", list->data);
+    list = list->next;
   }
 }
 
 /* free list
- * thisList    a pointer to a p_list(which is a pointer to a linked list node)
+ * thisList    a pointer to a p_rules(which is a pointer to a linked list node)
  * This wrapper method takes a pointer to a linked list and calls the recursive
- * function r_free_list to free the list. Once the recursive function returns,
- * free_list then sets the given
+ * function r_freerules to free the list. Once the recursive function returns,
+ * freerules then sets the given prules pointer to NULL to avoid undefined behavior
+ * in the caller
  */
-void free_list(p_list* plist){
-  r_free_list(plist);
-  *plist = NULL;
+void freerules(p_rules* prules){
+  r_freerules(prules);
+  *prules = NULL;
 }
 
-/* r_free_list
- * thisList    a pointer to a p_list(which is a pointer to a linked list)
- * r_free_list calls itself on every node in the linked list until it reaches
+/* r_freerules
+ * thisList    a pointer to a p_rules(which is a pointer to a linked list)
+ * r_freerules calls itself on every node in the linked list until it reaches
  * the null terminator at the end of the list. Then it frees all of the data
  * from each node it had just been called on
  */
-void r_free_list(p_list* plist){
-  if((*plist)->next != NULL) r_free_list(&(*plist)->next);
-  free((*plist)->data);
-  free(*plist);
+void r_freerules(p_rules* prules){
+  if((*prules)->next != NULL) r_freerules(&(*prules)->next);
+  free((*prules)->data);
+  free(*prules);
 }
