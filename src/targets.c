@@ -77,7 +77,7 @@ void free_list(p_list* plist){
  * from each node it had just been called on
  */
 void r_free_list(p_list* plist){
-  if((*plist)->next != NULL) free_list(&(*plist)->next);
+  if((*plist)->next != NULL) r_free_list(&(*plist)->next);
   free((*plist)->data);
   free(*plist);
 }
