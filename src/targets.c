@@ -29,16 +29,28 @@ struct list_st{
   char* data;
 };
 
-void append(p_list* thisList, char* string){
+/* append
+ * plist    pointer to a list
+ * string   the given string to put in the list
+ * append takes a pointer to a list and a string to add to that list and then
+ * creates a new node with allocated memory and adds a copy of the string to that
+ * node. Append then finds the end of plist and adds the new node to it.
+ */
+void append(p_list* plist, char* string){
   p_list newNode = malloc(sizeof(list));
 
   newNode->data = strdup(string);
   newNode->next = NULL;
 
-  while(*thisList != NULL) thisList = &((*thisList)->next);
-  *thisList = newNode;
+  while(*plist != NULL) plist = &((*plist)->next);
+  *plist = newNode;
 }
 
+/* print_list
+ * thisList   pointer to a list node (not necessarily the first)
+ * print_list steps through each node in the linked list, from thisList onward,
+ * and prints the data at each node until reaching the end
+ */
 void print_list(list* thisList){
 
   while(thisList != NULL){
@@ -46,31 +58,26 @@ void print_list(list* thisList){
     thisList = thisList->next;
   }
 }
-void r_free_list(p_list* thisList){
-  if((*thisList)->next != NULL) free_list(&(*thisList)->next);
-  free((*thisList)->data);
-  free(*thisList);
+
+/* free list
+ * thisList    a pointer to a p_list(which is a pointer to a linked list node)
+ * This wrapper method takes a pointer to a linked list and calls the recursive
+ * function r_free_list to free the list. Once the recursive function returns,
+ * free_list then sets the given
+ */
+void free_list(p_list* plist){
+  r_free_list(plist);
+  *plist = NULL;
 }
 
-void free_list(p_list* thisList){
-  r_free_list(thisList);
-  *thisList = NULL;
-}
-
-void deleteList(p_list* head_ref) {
-   /* deref head_ref to get the real head */
-   p_list current = *head_ref;
-   p_list next;
-
-   while (current != NULL)
-   {
-       next = current->next;
-       free(current->data);
-       free(current);
-       current = next;
-   }
-
-   /* deref head_ref to affect the real head back
-      in the caller. */
-   *head_ref = NULL;
+/* r_free_list
+ * thisList    a pointer to a p_list(which is a pointer to a linked list)
+ * r_free_list calls itself on every node in the linked list until it reaches
+ * the null terminator at the end of the list. Then it frees all of the data
+ * from each node it had just been called on
+ */
+void r_free_list(p_list* plist){
+  if((*plist)->next != NULL) free_list(&(*plist)->next);
+  free((*plist)->data);
+  free(*plist);
 }
