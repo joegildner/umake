@@ -71,7 +71,7 @@ int main(int argc, char* argv[]) {
 
   for(int i=1; i<argc; i++){
     ruleList* rules = NULL;
-    rules = findtargetrules(argv[i],targets);
+    findtargetrules(argv[i],targets,&rules);
     processrules(rules);
   }
 

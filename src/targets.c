@@ -24,85 +24,53 @@
 *        NULL                 NULL
 */
 
-struct target_st{
-  targetList* nextTarg;
-  char* targArgs;
-  ruleList* targRules;
+struct list_st{
+  list* next;
+  char* data;
 };
 
-struct rule_st{
-  ruleList* nextRule;
-  char* rule;
-};
+void append(p_list* thisList, char* string){
+  p_list newNode = malloc(sizeof(list));
 
-void targpush(targetList** firstTarg, char* targLine){
-  targetList* newTarg = malloc(sizeof(targetList));
-  int argc;
+  newNode->data = strdup(string);
+  newNode->next = NULL;
 
-  newTarg->nextTarg = *firstTarg;
-  char** targArgs = arg_parse(targLine,&argc);
-  newTarg->targArgs = malloc((argc+1) * sizeof(char*));
-  memcpy(newTarg->targArgs, targArgs, (argc+1) * sizeof(char*));
-  strcpy(newTarg->targArgs,targLine);
-  newTarg->targRules = NULL;
-
-  *firstTarg = newTarg;
+  while(*thisList != NULL) thisList = &((*thisList)->next);
+  *thisList = newNode;
 }
 
-void t_addrule(targetList* target, char* ruleLine){
-  addrule(&target->targRules,ruleLine);
-}
+void print_list(list* thisList){
 
-void addrule(ruleList** head, char* ruleLine){
-  ruleList* next = malloc(sizeof(ruleList));
-  next->nextRule = NULL;
-  next->rule = malloc(strlen(ruleLine)*sizeof(char*));
-  strcpy(next->rule,ruleLine);
-
-  if(*head == NULL){
-    *head = next;
-  }else{
-    ruleList* thisNode = *head;
-    while(thisNode->nextRule != NULL){
-      thisNode = thisNode->nextRule;
-    }
-    thisNode->nextRule = next;
+  while(thisList != NULL){
+    printf("%s\n", thisList->data);
+    thisList = thisList->next;
   }
 }
-
-ruleList* getRuleList(targetList* target){
-  return target->targRules;
+void r_free_list(p_list* thisList){
+  if((*thisList)->next != NULL) free_list(&(*thisList)->next);
+  free((*thisList)->data);
+  free(*thisList);
 }
 
-
-targetList* nexttarget(targetList* original){
-  return original->nextTarg;
+void free_list(p_list* thisList){
+  r_free_list(thisList);
+  *thisList = NULL;
 }
 
+void deleteList(p_list* head_ref) {
+   /* deref head_ref to get the real head */
+   p_list current = *head_ref;
+   p_list next;
 
-void findtargetrules(char* argument, targetList* targets, ruleList** rules){
-  targetList thisTarget = NULL;
-  while(targets != NULL){
-    if(strcmp(argument,targets->targArgs)==0){
-      thisTarget = targets;
-    }
-  }
-  *rules = thisTarget->targRules;
-}
+   while (current != NULL)
+   {
+       next = current->next;
+       free(current->data);
+       free(current);
+       current = next;
+   }
 
-void printRules(ruleList* rules){
-  ruleList* thisRule = rules;
-  while(thisRule->nextRule != NULL){
-    printf("%s\n", thisRule->rule);
-    thisRule = thisRule->nextRule;
-  }
-  printf("%s\n", thisRule->rule);
-}
-
-void printTargs(targetList* targs){
-  while(targs!= NULL){
-    printf("%s\n", targs->targArgs);
-    printRules(targs->targRules);
-    targs = targs->nextTarg;
-  }
+   /* deref head_ref to affect the real head back
+      in the caller. */
+   *head_ref = NULL;
 }

@@ -1,23 +1,13 @@
-#ifndef TARGETS
-#define TARGETS
+#ifndef LIST
+#define LIST
 
-typedef struct target_st targetList;
-typedef struct rule_st ruleList;
+typedef struct list_st list;
+typedef list* p_list;
 
-ruleList* new_ruleList(char* ruleLine);
-targetList* new_targetList();
+void append(p_list* thisList, char* string);
+void print_list(list* thisList);
 
-void targpush(targetList** firstTarg, char* targLine);
-void addtarget(targetList** head, char* ruleLine);
-
-void t_addrule(targetList* target, char* ruleLine);
-void addrule(ruleList** target, char* ruleLine);
-
-ruleList* getRuleList(targetList* thisTarget);
-targetList* nexttarget(targetList* targ);
-
-void findtargetrules(char* argument, targetList* targets);
-
-void printRules(ruleList* rules);
-void printTargs(targetList* targs);
+void free_list(p_list* thisList);
+void r_free_list(p_list* thisList);
+void deleteList(p_list* head_ref);
 #endif
