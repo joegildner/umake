@@ -14,7 +14,7 @@
 #include "targets.h"
 
 /* CONSTANTS */
-
+void gdbbreak();
 
 /* PROTOTYPES */
 
@@ -41,6 +41,8 @@ int main(int argc, char* argv[]) {
   p_targets targets = NULL;
   p_targets currtarget = NULL;
 
+  gdbbreak();
+
   while(-1 != linelen) {
 
     if(line[linelen-1]=='\n') {
@@ -59,13 +61,14 @@ int main(int argc, char* argv[]) {
     linelen = getline(&line, &bufsize, makefile);
   }
 
-  //print_targets(targets);
+  print_targets(targets);
 
   for(int i=1; i<argc; i++){
     execrules(targets, argv[i]);
   }
 
   free(line);
+  freetargets(&targets);
 
   return EXIT_SUCCESS;
 }
@@ -86,9 +89,14 @@ int getlinetype(char* line){
   }
 
   if(line[0] == '\t') lineType = 1;
-  else if(isalpha(line[0])) lineType = 0;
+  else if(isalnum(line[0])) lineType = 0;
   else lineType =2;
 
   return lineType;
 
   }
+
+void gdbbreak(){
+  int x =0;
+  x++;
+}

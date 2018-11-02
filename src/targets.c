@@ -39,7 +39,9 @@ struct rule_st{
 };
 
 /* addtarget
- *
+ * ptargets   pointer to a list of targets, not necessarily the head
+ * targetstr  string data to add to the new target node
+ * addtarget constructs a new target node a
  */
 p_targets addtarget(p_targets* ptargets, char* targetstr){
   p_targets newnode = malloc(sizeof(targets));
@@ -55,11 +57,14 @@ p_targets addtarget(p_targets* ptargets, char* targetstr){
   return *ptargets;
 }
 
+/*
+ */
 void target_addrule(p_targets ptargets, char* rulestr){
   addrule(&(ptargets->targetrules),rulestr);
 }
 
-
+/*
+ */
 void print_targets(p_targets targets){
   while(targets != NULL){
     printf("%s\n",targets->targetdata[0]);
@@ -68,6 +73,8 @@ void print_targets(p_targets targets){
   }
 }
 
+/*
+ */
 void execrules(p_targets targetlist, char* findtarget){
   while(targetlist != NULL){
     if(strcmp(findtarget,targetlist->targetdata[0])==0){
@@ -138,6 +145,19 @@ void r_freerules(p_rules* prules){
   free(*prules);
 }
 
+void freetargets(p_targets* ptargets){
+  if((*ptargets)!=NULL) r_freetargets(ptargets);
+  *ptargets = NULL;
+}
+
+void r_freetargets(p_targets* ptargets){
+  if((*ptargets)->nexttarget!=NULL) r_freetargets(&(*ptargets)->nexttarget);
+  freerules(&(*ptargets)->targetrules);
+  free((*ptargets)->targetdata[0]);
+  free((*ptargets)->targetdata);
+  free(*ptargets);
+}
+
 /* Process line
  * line    command line to extract command and arguments from
  * This function takes a full command line, with multiple possible arguments
@@ -146,7 +166,8 @@ void r_freerules(p_rules* prules){
  */
 void processline (char* line) {
   int argc;
-  char** commandArgs = arg_parse(line, &argc);
+  char* linecpy = strdup(line);
+  char** commandArgs = arg_parse(linecpy, &argc);
 
   if(argc>0){
     const pid_t cpid = fork();
@@ -158,6 +179,7 @@ void processline (char* line) {
       }
 
       case 0: {
+
         execvp(commandArgs[0],commandArgs);
         perror("execvp");
         exit(EXIT_FAILURE);
@@ -179,4 +201,5 @@ void processline (char* line) {
     }
   }
   free(commandArgs);
+  free(linecpy);
 }

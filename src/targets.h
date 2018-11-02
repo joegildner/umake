@@ -1,7 +1,6 @@
 #ifndef LIST
 #define LIST
 /* target list specifications */
-//TODO: add target list specifications...
 typedef struct target_st targets;
 typedef targets* p_targets;
 typedef struct rule_st rules;
@@ -10,8 +9,9 @@ typedef rules* p_rules;
 p_targets addtarget(p_targets*, char*);
 void target_addrule(p_targets ptargets, char* rulestr);
 void print_targets(p_targets);
-
 void execrules(p_targets, char*);
+void freetargets(p_targets*);
+void r_freetargets(p_targets*);
 
 /* rule list specifications */
 

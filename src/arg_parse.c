@@ -20,6 +20,8 @@ char** arg_parse(char* line, int *argcp){
   char* placePointers = line;
   char** argArray = malloc((*argcp+1) * sizeof(char*));
 
+
+
   for(int i=0; i<*argcp; i++){
     while(isspace(*placePointers)){
       placePointers++;
@@ -61,4 +63,9 @@ int count_args(char* line){
   }
 
   return argCount;
+}
+
+void free_args(char** args){
+  if(args[1]!=NULL) free_args(&args[1]);
+  free(args[0]);
 }
