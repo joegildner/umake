@@ -27,7 +27,7 @@
 struct target_st{
   p_targets nexttarget;
   p_rules targetrules;
-  char* targetstr;
+  char** targetdata;
 };
 
 struct rule_st{
@@ -37,8 +37,9 @@ struct rule_st{
 
 p_targets addtarget(p_targets* ptargets, char* targetstr){
   p_targets newnode = malloc(sizeof(targets));
+  int argc;
 
-  newnode->targetstr = strdup(targetstr);
+  newnode->targetdata = arg_parse(strdup(targetstr),&argc);
   newnode->targetrules = NULL;
   newnode->nexttarget = NULL;
 
@@ -54,7 +55,7 @@ void target_addrule(p_targets ptargets, char* rulestr){
 
 void print_targets(p_targets targets){
   while(targets != NULL){
-    printf("%s:\n",targets->targetstr);
+    printf("%s:\n",targets->targetdata[0]);
     print_rules(targets->targetrules);
     targets = targets->nexttarget;
   }
