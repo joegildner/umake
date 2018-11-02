@@ -6,6 +6,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
+#include <unistd.h>
+#include <sys/wait.h>
 
 /* How the data structure works
 *  ______________      ______________
@@ -35,6 +38,9 @@ struct rule_st{
   char* rulestr;
 };
 
+/* addtarget
+ *
+ */
 p_targets addtarget(p_targets* ptargets, char* targetstr){
   p_targets newnode = malloc(sizeof(targets));
   int argc;
@@ -53,15 +59,31 @@ void target_addrule(p_targets ptargets, char* rulestr){
   addrule(&(ptargets->targetrules),rulestr);
 }
 
+
 void print_targets(p_targets targets){
   while(targets != NULL){
-    printf("%s:\n",targets->targetdata[0]);
+    printf("%s\n",targets->targetdata[0]);
     print_rules(targets->targetrules);
     targets = targets->nexttarget;
   }
 }
 
+void execrules(p_targets targetlist, char* findtarget){
+  while(targetlist != NULL){
+    if(strcmp(findtarget,targetlist->targetdata[0])==0){
+      break;
+    }
+    targetlist = targetlist->nexttarget;
+  }
 
+  if(targetlist != NULL){
+    p_rules exrules = targetlist->targetrules;
+    while(exrules!=NULL){
+      processline(exrules->rulestr);
+      exrules = exrules->nextrule;
+    }
+  }
+}
 
 /* addrule
  * prules    pointer to a list
@@ -114,4 +136,47 @@ void r_freerules(p_rules* prules){
   if((*prules)->nextrule != NULL) r_freerules(&(*prules)->nextrule);
   free((*prules)->rulestr);
   free(*prules);
+}
+
+/* Process line
+ * line    command line to extract command and arguments from
+ * This function takes a full command line, with multiple possible arguments
+ * and flags, then executes the command in a child process. If line is empty
+ * then process line does nothing with it
+ */
+void processline (char* line) {
+  int argc;
+  char** commandArgs = arg_parse(line, &argc);
+
+  if(argc>0){
+    const pid_t cpid = fork();
+    switch(cpid) {
+
+      case -1: {
+        perror("fork");
+        break;
+      }
+
+      case 0: {
+        execvp(commandArgs[0],commandArgs);
+        perror("execvp");
+        exit(EXIT_FAILURE);
+        break;
+      }
+
+      default: {
+        int   status;
+        const pid_t pid = wait(&status);
+        if(-1 == pid) {
+          perror("wait");
+        }
+        else if (pid != cpid) {
+          fprintf(stderr, "wait: expected process %d, but waited for process %d",
+          cpid, pid);
+        }
+        break;
+      }
+    }
+  }
+  free(commandArgs);
 }
