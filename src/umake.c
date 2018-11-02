@@ -18,7 +18,7 @@
 
 /* PROTOTYPES */
 
-void processrules(ruleList* rules);
+//void processrules(ruleList* rules);
 
 int getlinetype(char* line);
 
@@ -45,7 +45,8 @@ int main(int argc, char* argv[]) {
   char*   line    = NULL;
   ssize_t linelen = getline(&line, &bufsize, makefile);
 
-  targetList* targets = NULL;
+  p_targets targets = NULL;
+  p_targets currtarget = NULL;
 
   while(-1 != linelen) {
 
@@ -56,25 +57,16 @@ int main(int argc, char* argv[]) {
 
     int lineType = getlinetype(line);
     if(lineType == 0){
-      targpush(&targets,line);
-      //printTargs(targets);
+      currtarget = addtarget(&targets,line);
     }
     else if(lineType == 1){
-      t_addrule(targets, line);
+      target_addrule(currtarget,line);
     }
 
     linelen = getline(&line, &bufsize, makefile);
   }
 
-  printTargs(targets);
-
-
-  for(int i=1; i<argc; i++){
-    ruleList* rules = NULL;
-    findtargetrules(argv[i],targets,&rules);
-    processrules(rules);
-  }
-
+  print_targets(targets);
 
   free(line);
 

@@ -24,12 +24,43 @@
 *        NULL                 NULL
 */
 
-
+struct target_st{
+  p_targets nexttarget;
+  p_rules targetrules;
+  char* targetstr;
+};
 
 struct rule_st{
-  p_rules next;
-  char* data;
+  p_rules nextrule;
+  char* rulestr;
 };
+
+p_targets addtarget(p_targets* ptargets, char* targetstr){
+  p_targets newnode = malloc(sizeof(targets));
+
+  newnode->targetstr = strdup(targetstr);
+  newnode->targetrules = NULL;
+  newnode->nexttarget = NULL;
+
+  while(*ptargets != NULL) ptargets = &((*ptargets)->nexttarget);
+  *ptargets = newnode;
+
+  return *ptargets;
+}
+
+void target_addrule(p_targets ptargets, char* rulestr){
+  addrule(&(ptargets->targetrules),rulestr);
+}
+
+void print_targets(p_targets targets){
+  while(targets != NULL){
+    printf("%s:\n",targets->targetstr);
+    print_rules(targets->targetrules);
+    targets = targets->nexttarget;
+  }
+}
+
+
 
 /* addrule
  * prules    pointer to a list
@@ -38,13 +69,13 @@ struct rule_st{
  * creates a new node with allocated memory and adds a copy of the string to that
  * node. addrule then finds the end of prules and adds the new node to it.
  */
-void addrule(p_rules* prules, char* string){
+void addrule(p_rules* prules, char* rulestr){
   p_rules newNode = malloc(sizeof(rules));
 
-  newNode->data = strdup(string);
-  newNode->next = NULL;
+  newNode->rulestr = strdup(rulestr);
+  newNode->nextrule = NULL;
 
-  while(*prules != NULL) prules = &((*prules)->next);
+  while(*prules != NULL) prules = &((*prules)->nextrule);
   *prules = newNode;
 }
 
@@ -55,8 +86,8 @@ void addrule(p_rules* prules, char* string){
  */
 void print_rules(p_rules list){
   while(list != NULL){
-    printf("%s\n", list->data);
-    list = list->next;
+    printf("%s\n", list->rulestr);
+    list = list->nextrule;
   }
 }
 
@@ -68,7 +99,7 @@ void print_rules(p_rules list){
  * in the caller
  */
 void freerules(p_rules* prules){
-  r_freerules(prules);
+  if((*prules)!= NULL) r_freerules(prules);
   *prules = NULL;
 }
 
@@ -79,7 +110,7 @@ void freerules(p_rules* prules){
  * from each node it had just been called on
  */
 void r_freerules(p_rules* prules){
-  if((*prules)->next != NULL) r_freerules(&(*prules)->next);
-  free((*prules)->data);
+  if((*prules)->nextrule != NULL) r_freerules(&(*prules)->nextrule);
+  free((*prules)->rulestr);
   free(*prules);
 }
