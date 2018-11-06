@@ -1,5 +1,5 @@
-umake: umake.o arg_parse.o
-	gcc -o umake-new umake.o arg_parse.o
+umake: umake.o arg_parse.o targets.o
+	gcc -o umake-new umake.o arg_parse.o targets.o
 	mv -i umake-new umake
 
 umake.o: umake.c arg_parse.h

@@ -17,6 +17,4 @@ char** arg_parse(char* line, int *argcp);
  */
 int count_args(char* line);
 
-void free_args(char** args);
-
 #endif

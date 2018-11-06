@@ -57,13 +57,18 @@ p_targets addtarget(p_targets* ptargets, char* targetstr){
   return *ptargets;
 }
 
-/*
+/*target_addrule
+ *ptargets  pointer to a list of targets
+ *target_addrule adds a rule to the end of the rulelist for the
+ *given target.
  */
 void target_addrule(p_targets ptargets, char* rulestr){
   addrule(&(ptargets->targetrules),rulestr);
 }
 
-/*
+/* print_targets
+ * targets
+ * iterates through the target list and then
  */
 void print_targets(p_targets targets){
   while(targets != NULL){
@@ -73,7 +78,12 @@ void print_targets(p_targets targets){
   }
 }
 
-/*
+/* execrules
+ * targetlist   a pointer to a list of targets
+ * findtarget   user-specified target we are looking for
+ * execrules iterates through the targetlist until it finds a matching
+ * target and then sequentially executes the rules associated with that
+ * target
  */
 void execrules(p_targets targetlist, char* findtarget){
   while(targetlist != NULL){
