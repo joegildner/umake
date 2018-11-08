@@ -1,9 +1,8 @@
-umake: umake.o arg_parse.o targets.o
-	gcc -o umake-new umake.o arg_parse.o targets.o
-	mv -i umake-new umake
+all : umake
 
-umake.o: umake.c arg_parse.h
+umake.o: umake.c
 	gcc -c umake.c
 
-arg_parse.o: arg_parse.c arg_parse.h
-	gcc -c arg_parse.c
+umake: umake.o
+	gcc -o umake-new umake.o
+	mv -i umake-new umake
