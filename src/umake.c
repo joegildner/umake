@@ -11,7 +11,9 @@
 #include <sys/wait.h>
 #include <ctype.h>
 #include "arg_parse.h"
+
 #include "targets.h"
+#include "linetype.h"
 
 /* CONSTANTS */
 
@@ -47,14 +49,15 @@ int main(int argc, char* argv[]) {
       line[linelen] = '\0';
     }
 
-    int lineType = getlinetype(line);
-    if(lineType == 0){
-      currtarget = addtarget(&targets,line);
+    switch(linetype(line)){
+      case LINE_TARGET:
+        currtarget = addtarget(&targets,line);
+        break;
+      case LINE_RULE:
+        target_addrule(currtarget,line);
+        break;
     }
-    else if(lineType == 1){
-      target_addrule(currtarget,line);
-    }
-
+    
     linelen = getline(&line, &bufsize, makefile);
   }
 
@@ -66,28 +69,6 @@ int main(int argc, char* argv[]) {
   freetargets(&targets);
   fclose(makefile);
 
+
   return EXIT_SUCCESS;
 }
-
-/* get line type
- * line   makefile line
- * get line type determines whether we are looking at a target, a rule,
- * or just a blank line. Skips all leading whitespace
- * 0 for target
- * 1 for rule
- * 2 for other
- */
-int getlinetype(char* line){
-  int lineType = 2;
-
-  while(line[0] == ' '){
-    line++;
-  }
-
-  if(line[0] == '\t') lineType = 1;
-  else if(isalnum(line[0])) lineType = 0;
-  else lineType =2;
-
-  return lineType;
-
-  }

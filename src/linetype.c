@@ -4,102 +4,111 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <ctype.h>
+#include "linetype.h"
 
-int linetype(char* thischar);
-int linetype_rule(char* thischar);
-int linetype_targ(char* thischar);
-void printchars(char* chars);
-bool validchar(char thischar, int charset);
+char validchars[10] = {'-','$','{','}','_','-','.',':',' ','='};
 
-enum{
-	LINE_INVALID = -1,
-	LINE_TARGET,
-	LINE_RULE
-};
+/*
+        start     space
+        +-----+  +--+
+  	      		|  |  |
+  	       	 +v--+--v-+
+	  	       |        |                         valid
+    '\t'     |   q0   |   valid               +--+
+       +----+|        |+-------------------+  |  |
+       |     +--------+                  +-v--+--v+
+       |                                 |        |
+       |                            ':'  |   q1   | '='
+       |                         +-------+        +------+
+       |                         |       +----+---+      |
+       |                         |            |          |
+       |                         |           |else       |
+       |                         |          |            |
+val +--v-----+               +-v------+     |       +--v-----+
++--->        |            +-->        |     |       |        <--+
+|   |  RULE  |       valid|  | TARGET |     |       |  VAR   |  |valid
++---+        |            +--+        |     |       |        +--+
+    +---+----+               +---+----+     |       +-----+--+
+        |                        |          |             |
+        |else                    |else      |             |else
+        |                        |          |             |
+        |                   +----v-----+    |             |
+        |                   |          <----+             |
+        +------------------->  invalid <------------------+
+				        						|          |
+										        +----------+
+*/
 
-char rulechars[4] = {'-','.','\t',' '};
-char targetchars[5] = {'-','.','\t',' ',':'};
-
-
-int main(int argc, char* argv[]){
-	FILE* makefile = fopen("./uMakefile", "r");
-
-	size_t  bufsize = 0;
-	char*   line    = NULL;
-	ssize_t linelen = getline(&line, &bufsize, makefile);
-	//int type = 0;
-
-	while(-1 != linelen) {
-
-		if(line[linelen-1]=='\n') {
-			linelen -= 1;
-			line[linelen] = '\0';
-		}
-
-
-
-		printf("%d\n", linetype(line));
-		//printchars(line);
-		linelen = getline(&line, &bufsize, makefile);
-
-	}
-	printf("\n%d\n", validchar(':',LINE_TARGET));
-
-	free(line);
-	fclose(makefile);
-
-	return EXIT_SUCCESS;
-}
-
+/* linetype
+ * thischar 	current character in line
+ * the following give functions represent states on the above statemachine, except invalid.
+ * the functions call eachother based on given input and follow the edges of the state machine
+ */
 int linetype(char* thischar){
 	if(*thischar == ' ')
 		return linetype(++thischar);
 	else if(*thischar == '\t')
 		return linetype_rule(++thischar);
 	else if(isalnum(*thischar))
-		return linetype_targ(++thischar);
+		return linetype_q1(++thischar);
 	else return LINE_INVALID;
 }
 
-int linetype_rule(char* thischar){
-	if(isalnum(*thischar) || *thischar == ' ' || *thischar == '\t' || *thischar == ':' || *thischar == '.')
-		return linetype_rule(++thischar);
-	else if(*thischar == '\0')
-		return LINE_RULE;
-	else
-		return LINE_RULE;
+int linetype_q1(char* thischar){
+	if(*thischar == ':')
+		return linetype_targ(++thischar);
+	else if(*thischar == '=')
+		return linetype_var(++thischar);
+	else if(isvalidchar(*thischar))
+			return linetype_q1(++thischar);
+	else return LINE_INVALID;
 }
 
 int linetype_targ(char* thischar){
-	if(isalnum(*thischar) || *thischar == ' ' || *thischar == '\t' || *thischar == ':' || *thischar == '.')
+	if(isvalidchar(*thischar))
 		return linetype_targ(++thischar);
 	else if(*thischar == '\0')
 		return LINE_TARGET;
 	else{
-		//printf("",*thischar);
-		return LINE_TARGET;
+		return LINE_INVALID;
 	}
 }
 
-bool validchar(char thischar, int charset){
-	char* validchars;
-	switch(charset){
-		case LINE_TARGET:
-			validchars = targetchars;
-			break;
-		case LINE_RULE:
-			validchars = rulechars;
-			break;
-		default:
-			perror("validchar: invalid charset");
-			break;
-	}
+int linetype_rule(char* thischar){
+	if(isvalidchar(*thischar))
+		return linetype_rule(++thischar);
+	else if(*thischar == '\0')
+		return LINE_RULE;
+	else
+		return LINE_INVALID;
+}
 
+/* q1
+ * thischar 	current character in line
+ *
+ *
+ */
+int linetype_var(char* thischar){
+	if(isvalidchar(*thischar))
+		return linetype_var(++thischar);
+	else if(*thischar == '\0')
+		return LINE_VAR;
+	else
+		return LINE_INVALID;
+}
+
+
+/* isvalidchar
+ * thischar 	character of interest
+ * This function checks whether thischar belongs to the array of valid
+ * characters above or if it is alphanumeric, and returns true if so
+ */
+bool isvalidchar(char thischar){
 	bool contains = false;
 	for(int i=0; i<sizeof(validchars)/sizeof(char); i++){
 		if(validchars[i] == thischar) contains = true;
 	}
-	return contains;
+	return (contains || isalnum(thischar));
 }
 
 void printchars(char* chars){

@@ -87,9 +87,7 @@ void print_targets(p_targets targets){
  */
 void execrules(p_targets targetlist, char* findtarget){
   while(targetlist != NULL){
-    if(strcmp(findtarget,targetlist->targetdata[0])==0){
-      break;
-    }
+    if(strcmp(findtarget,targetlist->targetdata[0])==0) break;
     targetlist = targetlist->nexttarget;
   }
 
@@ -99,6 +97,8 @@ void execrules(p_targets targetlist, char* findtarget){
       processline(exrules->rulestr);
       exrules = exrules->nextrule;
     }
+  }else{
+    printf("No target %s found\n",findtarget);
   }
 }
 
@@ -212,4 +212,14 @@ void processline (char* line) {
   }
   free(commandArgs);
   free(linecpy);
+}
+/* Expand
+ * orig    The input string that may contain variables to be expanded
+ * new     An output buffer that will contain a copy of orig with all
+ *         variables expanded
+ * newsize The size of the buffer pointed to by new.
+ * returns 1 upon success or 0 upon failure.
+ */
+int expand(char* orig, char* new, int newsize){
+  return 0;
 }

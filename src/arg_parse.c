@@ -39,21 +39,20 @@ char** arg_parse(char* line, int *argcp){
  * arg_parse function can easily distinguish the seperate arguments
  */
 int count_args(char* line){
-  char* countString = line;
   int argCount =0;
   bool firstSpace = false;
 
-  while(*countString != '\0'){
-    if(*countString == ':') *countString = ' ';
-  if(isspace(*countString) && firstSpace){
+  while(*line != '\0'){
+    if(*line == ':') *line = ' ';
+    if(isspace(*line) && firstSpace){
       argCount++;
-      *countString = '\0';
+      *line = '\0';
       firstSpace = false;
     }
-    else if(!isspace(*countString)){
+    else if(!isspace(*line)){
       firstSpace = true;
     }
-    countString++;
+    line++;
   }
 
   if(firstSpace){
