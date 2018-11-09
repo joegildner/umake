@@ -175,9 +175,14 @@ void r_freetargets(p_targets* ptargets){
  * then process line does nothing with it
  */
 void processline (char* line) {
-  int argc;
-  char* linecpy = strdup(line);
-  char** commandArgs = arg_parse(linecpy, &argc);
+  int argc = 0;
+  int expandsize = 1024;
+  char expandline[expandsize];
+
+  if(!expand(line, expandline, expandsize))
+    fprintf(stderr, "unable to expand environment variable, check syntax");
+
+  char** commandArgs = arg_parse(expandline, &argc);
 
   if(argc>0){
     const pid_t cpid = fork();
@@ -211,8 +216,8 @@ void processline (char* line) {
     }
   }
   free(commandArgs);
-  free(linecpy);
 }
+
 /* Expand
  * orig    The input string that may contain variables to be expanded
  * new     An output buffer that will contain a copy of orig with all
@@ -220,6 +225,35 @@ void processline (char* line) {
  * newsize The size of the buffer pointed to by new.
  * returns 1 upon success or 0 upon failure.
  */
-int expand(char* orig, char* new, int newsize){
-  return 0;
-}
+ int expand(char* orig, char* new, int newsize){
+   char* varstart = NULL;
+
+   while(*orig!='\0'){
+     if(varstart != NULL){
+       if(*orig == '}'){
+         *orig = '\0';
+         sprintf(new, "%s%c", getenv(varstart),'\0');
+         new+=strlen(new);
+         varstart = NULL;
+       }
+       else if(*orig == '{') {
+         fprintf(stderr, "Unable to expand, mismatched \'{\'\n");
+         break;
+       }
+     }
+     else{
+       if(*orig == '$' && orig[1] == '{' && varstart == NULL){
+         varstart = orig+2;
+         orig += 2;
+       }else{
+         *new = *orig;
+         new[1] = '\0';
+         new++;
+       }
+     }
+     orig++;
+   }
+
+   return (varstart == NULL);
+
+ }

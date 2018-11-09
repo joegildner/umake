@@ -27,4 +27,5 @@ void r_freerules(p_rules*);
 */
 void processline(char* line);
 
+int expand(char* orig, char* new, int newsize);
 #endif

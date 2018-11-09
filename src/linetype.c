@@ -6,7 +6,7 @@
 #include <ctype.h>
 #include "linetype.h"
 
-char validchars[10] = {'-','$','{','}','_','-','.',':',' ','='};
+char validchars[11] = {'-','$','{','}','_','-','.',':',' ','=','/'};
 
 /*
         start     space
@@ -83,11 +83,7 @@ int linetype_rule(char* thischar){
 		return LINE_INVALID;
 }
 
-/* q1
- * thischar 	current character in line
- *
- *
- */
+
 int linetype_var(char* thischar){
 	if(isvalidchar(*thischar))
 		return linetype_var(++thischar);
@@ -101,7 +97,7 @@ int linetype_var(char* thischar){
 /* isvalidchar
  * thischar 	character of interest
  * This function checks whether thischar belongs to the array of valid
- * characters above or if it is alphanumeric, and returns true if so
+ * characters above or if it is alphanumeric, and returns true if either
  */
 bool isvalidchar(char thischar){
 	bool contains = false;
@@ -109,14 +105,4 @@ bool isvalidchar(char thischar){
 		if(validchars[i] == thischar) contains = true;
 	}
 	return (contains || isalnum(thischar));
-}
-
-void printchars(char* chars){
-	if(*chars != '\0'){
-		printf("%c",*chars);
-		//chars++;
-		printchars(++chars);
-	}else{
-		printf("done\n");
-	}
 }

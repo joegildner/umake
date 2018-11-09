@@ -17,11 +17,7 @@ linetype.o: linetype.c linetype.h
 	gcc -c linetype.c
 
 install: umake
-	cp -p -f umake /home/jgildner/bin/umake
-
-umakec:
-	gcc -o umake-new umake.c arg_parse.c targets.c
-	mv -i -f umake-new umake
+	cp -p -f umake /home/${USER}/bin/umake
 
 who:
 	echo The user is ${USER}.
