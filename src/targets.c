@@ -1,4 +1,4 @@
-/* CSCI 347: targets
+/* CSCI 347: targets 
 * 25 OCT 2018, Joe Gildner
 */
 #include "targets.h"
@@ -12,16 +12,16 @@
 
 /* How the data structure works
 *  ______________      ______________
-* | targetList   |    | targetList   |
-* |    nextTarg--|--->|    nextTarg--|--->NULL
-* |    targArgs  |    |     targArgs |
-* |    targRules |    |     targRules|
+* | target_st    |    | target_st    |
+* |    nexttarget|--->|    nexttarget|--->NULL
+* |    targetdata|    |    targetdata|
+* |    targetrules    |    targetrules
 * |_______|______|    |______ _|_____|
 *         |                    |
 *   ______V ____         ______V ____
-*  | ruleList   |       | ruleList   |
-*  |    rule    |       |     rule   |
-*  |    nextRule|       |    nextRule|
+*  | rule_st    |       | ruleList   |
+*  |    rulestr |       |    rule    |
+*  |    nextrule|       |    nextRule|
 *  |______|_____|       |______|_____|
 *         |                    |
 *        NULL                 NULL
@@ -37,6 +37,9 @@ struct rule_st{
   p_rules nextrule;
   char* rulestr;
 };
+
+/*------------------------------------------------------------- 
+  --------------- Target Builder functions ------------------*/
 
 /* addtarget
  * ptargets   pointer to a list of targets, not necessarily the head
@@ -66,41 +69,6 @@ void target_addrule(p_targets ptargets, char* rulestr){
   addrule(&(ptargets->targetrules),rulestr);
 }
 
-/* print_targets
- * targets
- * iterates through the target list and then
- */
-void print_targets(p_targets targets){
-  while(targets != NULL){
-    printf("%s\n",targets->targetdata[0]);
-    print_rules(targets->targetrules);
-    targets = targets->nexttarget;
-  }
-}
-
-/* execrules
- * targetlist   a pointer to a list of targets
- * findtarget   user-specified target we are looking for
- * execrules iterates through the targetlist until it finds a matching
- * target and then sequentially executes the rules associated with that
- * target
- */
-void execrules(p_targets targetlist, char* findtarget){
-  while(targetlist != NULL){
-    if(strcmp(findtarget,targetlist->targetdata[0])==0) break;
-    targetlist = targetlist->nexttarget;
-  }
-
-  if(targetlist != NULL){
-    p_rules exrules = targetlist->targetrules;
-    while(exrules!=NULL){
-      processline(exrules->rulestr);
-      exrules = exrules->nextrule;
-    }
-  }else{
-    printf("No target %s found\n",findtarget);
-  }
-}
 
 /* addrule
  * prules    pointer to a list
@@ -119,20 +87,13 @@ void addrule(p_rules* prules, char* rulestr){
   *prules = newNode;
 }
 
-/* print_rules
- * thisList   pointer to a list node (not necessarily the first)
- * print_rules steps through each node in the linked list, from thisList onward,
- * and prints the data at each node until reaching the end
- */
-void print_rules(p_rules list){
-  while(list != NULL){
-    printf("%s\n", list->rulestr);
-    list = list->nextrule;
-  }
-}
 
-/* free list
- * thisList    a pointer to a p_rules(which is a pointer to a linked list node)
+/*------------------------------------------------------------- 
+  --------------- Memory cleanup functions---------------------*/
+
+
+/* free rules
+ * rules    a pointer to a p_rules(which is a pointer to a linked list node)
  * This wrapper method takes a pointer to a linked list and calls the recursive
  * function r_freerules to free the list. Once the recursive function returns,
  * freerules then sets the given prules pointer to NULL to avoid undefined behavior
@@ -155,17 +116,69 @@ void r_freerules(p_rules* prules){
   free(*prules);
 }
 
+/* free targets
+ * ptargets   pointer to a targets data structure whose data is to be freed
+ * freetargets is a wrapper method which calls the recursive method r_freetargets to 
+ * free the memory in the structure. This method then clears the pointer
+ */
 void freetargets(p_targets* ptargets){
   if((*ptargets)!=NULL) r_freetargets(ptargets);
   *ptargets = NULL;
 }
 
+/* r_freetargets
+ * ptargets   target structure to free
+ * r_freetargets recursively calls itself on every target contained in the target structure and then
+ * uses the recursive freerules function to free each rule list of each target befgore freeing the
+ * data of each target
+ */
 void r_freetargets(p_targets* ptargets){
   if((*ptargets)->nexttarget!=NULL) r_freetargets(&(*ptargets)->nexttarget);
   freerules(&(*ptargets)->targetrules);
   free((*ptargets)->targetdata[0]);
   free((*ptargets)->targetdata);
   free(*ptargets);
+}
+
+
+
+/*------------------------------------------------------------- 
+  --------------- Target Execution functions ------------------*/
+
+/* execrules
+ * targetlist   a pointer to a list of targets
+ * findtarget   user-specified target we are looking for
+ * execrules iterates through the targetlist until it finds a matching
+ * target and then sequentially executes the rules associated with that
+ * target
+ */
+void execrules(p_targets targetlist, char* targstr){
+  p_targets thistarget = findtarget(targetlist,targstr);
+
+  if(thistarget != NULL){
+    char** depends = &thistarget->targetdata[1];
+    p_rules exrules = NULL;
+    while(*depends!=NULL){
+      execrules(targetlist, *depends);
+      exrules = thistarget->targetrules;
+      depends++;
+    }
+    while(exrules!=NULL){
+      processline(exrules->rulestr);
+      exrules = exrules->nextrule;
+    }
+  }else{
+    fprintf(stderr,"No target %s found\n",targstr);
+  }
+}
+
+p_targets findtarget(p_targets targetlist, char* targstr){
+  while(targetlist != NULL){
+    if(strcmp(targstr,targetlist->targetdata[0])==0)
+      break;
+    targetlist = targetlist->nexttarget;
+  }
+  return targetlist;
 }
 
 /* Process line
@@ -257,3 +270,31 @@ void processline (char* line) {
    return (varstart == NULL);
 
  }
+
+
+/*------------------------------------------------------------- 
+  --------------- print functions -----------------------------*/
+
+/* print_targets
+ * targets
+ * iterates through the target list and then
+ */
+void print_targets(p_targets targets){
+  while(targets != NULL){
+    printf("%s\n",targets->targetdata[0]);
+    print_rules(targets->targetrules);
+    targets = targets->nexttarget;
+  }
+}
+
+/* print_rules
+ * thisList   pointer to a list node (not necessarily the first)
+ * print_rules steps through each node in the linked list, from thisList onward,
+ * and prints the data at each node until reaching the end
+ */
+void print_rules(p_rules list){
+  while(list != NULL){
+    printf("%s\n", list->rulestr);
+    list = list->nextrule;
+  }
+}
