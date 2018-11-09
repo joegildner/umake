@@ -1,11 +1,11 @@
-CC = gcc
+CC=gcc
 
 umake: umake.o arg_parse.o linetype.o
 	gcc -o umake-new umake.o arg_parse.o targets.o linetype.o
 	mv -i -f umake-new umake
 
 umake.o: umake.c arg_parse.h
-	gcc -c umake.c
+	${CC} -c umake.c
 
 arg_parse.o: arg_parse.c arg_parse.h
 	gcc -c arg_parse.c

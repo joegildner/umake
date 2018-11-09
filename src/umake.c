@@ -10,8 +10,9 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <ctype.h>
-#include "arg_parse.h"
+#include <string.h>
 
+#include "arg_parse.h"
 #include "targets.h"
 #include "linetype.h"
 
@@ -22,6 +23,8 @@
 //void processrules(ruleList* rules);
 
 int getlinetype(char* line);
+
+int addenvvar(char* line);
 
 /* Main entry point.
 * argc    A count of command-line arguments
@@ -56,8 +59,11 @@ int main(int argc, char* argv[]) {
       case LINE_RULE:
         target_addrule(currtarget,line);
         break;
+      case LINE_VAR:
+        if(addenvvar(line)) perror("setenv");
+
     }
-    
+
     linelen = getline(&line, &bufsize, makefile);
   }
 
@@ -71,4 +77,20 @@ int main(int argc, char* argv[]) {
 
 
   return EXIT_SUCCESS;
+}
+
+/* addenvvvar
+ * line   new variable assignment to add to the environment
+ * addenvvar takes a string variable assignment of the form x = y and adds it to
+ * the current environment
+ */
+int addenvvar(char* line){
+  char* tokenptr;
+  char* name = line;
+
+  strtok_r(line, "=", &tokenptr);
+
+  char* val = tokenptr;
+  
+  return setenv(name, val, 0);
 }
