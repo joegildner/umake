@@ -4,7 +4,7 @@
 
 #include "arg_parse.h"
 #include <stdbool.h>
-#include <stdlib.h>
+#include <stdlib.h> 
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
@@ -17,16 +17,15 @@
  */
 char** arg_parse(char* line, int *argcp){
   *argcp = count_args(line);
-  char* placePointers = line;
   char** argArray = malloc((*argcp+1) * sizeof(char*));
 
   for(int i=0; i<*argcp; i++){
-    while(isspace(*placePointers)){
-      placePointers++;
+    while(isspace(*line)){
+      line++;
     }
-    argArray[i] = placePointers;
+    argArray[i] = line;
     argArray[i+1] = NULL;
-    placePointers+=strlen(placePointers)+1;
+    line+=strlen(line)+1;
   }
   return argArray;
 }
@@ -43,11 +42,13 @@ int count_args(char* line){
   bool firstSpace = false;
 
   while(*line != '\0'){
-    if(*line == ':') *line = ' ';
     if(isspace(*line) && firstSpace){
       argCount++;
       *line = '\0';
       firstSpace = false;
+    }else if(*line == ':'){
+      *line = ' ';
+      line--;
     }
     else if(!isspace(*line)){
       firstSpace = true;

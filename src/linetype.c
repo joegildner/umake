@@ -1,4 +1,8 @@
-#include <stdio.h>
+/* linetype.c
+ * 9 NOV 2018, Joe Gildner
+ */
+
+#include <stdio.h> 
 #include <stdlib.h>
 #include <stdbool.h>
 #include <unistd.h>
@@ -11,9 +15,9 @@ char validchars[11] = {'-','$','{','}','_','-','.',':',' ','=','/'};
 /*
         start     space
         +-----+  +--+
-  	      		|  |  |
+  	      	  |  |  |
   	       	 +v--+--v-+
-	  	       |        |                         valid
+	  	     |        |                         valid
     '\t'     |   q0   |   valid               +--+
        +----+|        |+-------------------+  |  |
        |     +--------+                  +-v--+--v+
@@ -35,8 +39,8 @@ val +--v-----+               +-v------+     |       +--v-----+
         |                   +----v-----+    |             |
         |                   |          <----+             |
         +------------------->  invalid <------------------+
-				        						|          |
-										        +----------+
+				        	|          |
+						    +----------+
 */
 
 /* linetype
@@ -97,7 +101,7 @@ int linetype_var(char* thischar){
 /* isvalidchar
  * thischar 	character of interest
  * This function checks whether thischar belongs to the array of valid
- * characters above or if it is alphanumeric, and returns true if either
+ * characters (validchars) above or if it is alphanumeric, and returns true if either
  */
 bool isvalidchar(char thischar){
 	bool contains = false;

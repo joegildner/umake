@@ -68,8 +68,9 @@ int main(int argc, char* argv[]) {
   }
 
   for(int i=1; i<argc; i++){
-    execrules(targets, argv[i]);
+    exectarget(targets, argv[i]);
   }
+
 
   free(line);
   freetargets(&targets);

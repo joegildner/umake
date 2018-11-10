@@ -152,26 +152,37 @@ void r_freetargets(p_targets* ptargets){
  * target and then sequentially executes the rules associated with that
  * target
  */
-void execrules(p_targets targetlist, char* targstr){
+void exectarget(p_targets targetlist, char* targstr){
   p_targets thistarget = findtarget(targetlist,targstr);
 
   if(thistarget != NULL){
-    char** depends = &thistarget->targetdata[1];
-    p_rules exrules = NULL;
-    while(*depends!=NULL){
-      execrules(targetlist, *depends);
-      exrules = thistarget->targetrules;
-      depends++;
+    int index = 1;
+    char** depends = thistarget->targetdata;
+    while(depends[index]!=NULL){
+      exectarget(targetlist, depends[index]);
+      index++;
     }
-    while(exrules!=NULL){
-      processline(exrules->rulestr);
-      exrules = exrules->nextrule;
-    }
-  }else{
-    fprintf(stderr,"No target %s found\n",targstr);
+
+    execrules(thistarget->targetrules);
+  }
+  else if(access(targstr, F_OK)){
+    printf("target not found: %s\n", targstr);
   }
 }
 
+void execrules(p_rules rulelist){
+  if(rulelist != NULL){
+    processline(rulelist->rulestr);
+    execrules(rulelist->nextrule);
+  }
+}
+
+/* findtarget
+ * targetlist   head of the target structure in question
+ * targstr      name of the target which we are looking for in the targetlist
+ * findtarget iterates through each target in the given target list until it finds
+ * targstr. If the desired target is not in the targetlist findtarget returns NULL
+ */
 p_targets findtarget(p_targets targetlist, char* targstr){
   while(targetlist != NULL){
     if(strcmp(targstr,targetlist->targetdata[0])==0)
@@ -281,7 +292,13 @@ void processline (char* line) {
  */
 void print_targets(p_targets targets){
   while(targets != NULL){
-    printf("%s\n",targets->targetdata[0]);
+    int index = 1;
+    char** depends = targets->targetdata;
+    while(depends[index]!=NULL){
+      printf("%s ",depends[index]);
+      index++;
+    }
+    printf("\n");
     print_rules(targets->targetrules);
     targets = targets->nexttarget;
   }

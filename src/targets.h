@@ -23,9 +23,11 @@ void r_freerules(p_rules*);
 
 // execution prototypes
 void processline(char* line);
-void execrules(p_targets, char*);
+void exectarget(p_targets, char*);
+void execrules(p_rules);
 p_targets findtarget(p_targets targetlist, char* findtarget);
 int expand(char* orig, char* new, int newsize);
+
 
 // print prototypes
 void print_targets(p_targets);
