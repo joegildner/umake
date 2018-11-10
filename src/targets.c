@@ -166,7 +166,7 @@ void exectarget(p_targets targetlist, char* targstr){
     execrules(thistarget->targetrules);
   }
   else if(access(targstr, F_OK)){
-    printf("target not found: %s\n", targstr);
+    fprintf(stderr,"target not found: %s\n", targstr);
   }
 }
 

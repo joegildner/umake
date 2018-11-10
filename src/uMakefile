@@ -1,21 +1,21 @@
-CC=gcc
-me=joe
+CC = gcc
+me = joe
 
 umake: umake.o arg_parse.o linetype.o targets.o
-	gcc -o umake-new umake.o arg_parse.o targets.o linetype.o
+	${CC} -o umake-new umake.o arg_parse.o targets.o linetype.o
 	mv -i -f umake-new umake
 
 umake.o: umake.c arg_parse.h
-	gcc -c umake.c
+	${CC} -c umake.c
 
 arg_parse.o: arg_parse.c arg_parse.h
-	gcc -c arg_parse.c
+	${CC} -c arg_parse.c
 
 targets.o: targets.c targets.h
-	gcc -c targets.c
+	${CC} -c targets.c
 
 linetype.o: linetype.c linetype.h
-	gcc -c linetype.c
+	${CC} -c linetype.c
 
 install: umake
 	cp -p -f umake /home/${USER}/bin/umake
@@ -24,10 +24,10 @@ sentence: who says what
 	echo The end.
 
 who:
-	echo Joe
+	echo ${me}
 
 says:
 	echo says that
 
 what:
-	echo he loves cheese.
+	echo he loves cheese
