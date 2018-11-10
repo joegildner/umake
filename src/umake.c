@@ -87,11 +87,9 @@ int main(int argc, char* argv[]) {
  */
 int addenvvar(char* line){
   char* tokenptr;
-  char* name = line;
 
-  strtok_r(line, "=", &tokenptr);
+  char* name = strtok_r(line, " = ", &tokenptr);
+  char* val = strtok_r(NULL, " = ", &tokenptr);
 
-  char* val = tokenptr;
-  
   return setenv(name, val, 0);
 }
