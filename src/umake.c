@@ -37,6 +37,10 @@ int addenvvar(char* line);
 */
 int main(int argc, char* argv[]) {
   FILE* makefile = fopen("./uMakefile", "r");
+  if(makefile == NULL){
+    perror("Unable to find uMakefile");
+    exit(1);
+  }
 
   size_t  bufsize = 0;
   char*   line    = NULL;
