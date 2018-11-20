@@ -28,6 +28,7 @@ void execrules(p_rules);
 p_targets findtarget(p_targets targetlist, char* findtarget);
 int expand(char* orig, char* new, int newsize);
 int modified(char* target, char* dependency);
+int directIO(char** commandArgs, int argc);
 
 // print prototypes
 void print_targets(p_targets);

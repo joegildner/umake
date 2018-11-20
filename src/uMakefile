@@ -36,4 +36,5 @@ says:
 	echo says that
 
 what:
-	echo he loves cheese
+	date >> log
+	ls -la log
