@@ -4,22 +4,27 @@ me = joe
 umake: umake.o arg_parse.o linetype.o targets.o
 	${CC} -o umake-new umake.o arg_parse.o targets.o linetype.o
 	mv -i -f umake-new umake
-	ls -la
+	echo umake done
 
-umake.o: umake.c arg_parse.h
+umake.o: umake.c arg_parse.h targets.h linetype.h
 	${CC} -c umake.c
+	echo umake.o done
 
 arg_parse.o: arg_parse.c arg_parse.h
 	${CC} -c arg_parse.c
+	echo arg_parse.o done
 
-targets.o: targets.c targets.h
+targets.o: targets.c targets.h arg_parse.h
 	${CC} -c targets.c
+	echo targets.o done
 
 linetype.o: linetype.c linetype.h
 	${CC} -c linetype.c
+	echo linetype.o done
 
 install: umake
 	cp -p -f umake /home/${USER}/bin/umake
+	echo install done
 
 sentence: who says what
 	echo The end.

@@ -1,4 +1,4 @@
-/* linetype.h
+/* linetype.h 
  * 9 NOV 2018, Joe Gildner
  */
 #ifndef LNTYPE

@@ -76,7 +76,6 @@ int main(int argc, char* argv[]) {
     exectarget(targets, argv[i]);
   }
 
-
   free(line);
   freetargets(&targets);
   fclose(makefile);

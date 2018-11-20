@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <ctype.h>
+
 #include "linetype.h"
 
 char validchars[12] = {'-','$','{','}','_','-','.',':',' ','=','/','*'};

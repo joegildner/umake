@@ -1,14 +1,17 @@
 /* CSCI 347: targets 
 * 25 OCT 2018, Joe Gildner 
 */
-#include "targets.h"
-#include "arg_parse.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
+#include <time.h>
+
+#include "targets.h"
+#include "arg_parse.h"
 
 /* How the data structure works
 *  ______________      ______________
@@ -154,17 +157,37 @@ void r_freetargets(p_targets* ptargets){
  */
 void exectarget(p_targets targetlist, char* targstr){
   p_targets thistarget = findtarget(targetlist,targstr);
+  bool rebuild = false;
 
   if(thistarget != NULL){
-    int index = 1;
+    struct stat targetstats;
+    stat(thistarget->targetdata[0], &targetstats);
+    time_t targmod_sec = targetstats.st_mtim.tv_sec;
+    long targmod_nsec = targetstats.st_mtim.tv_nsec;
+
     char** depends = thistarget->targetdata;
+    int index = 1;
+    
     while(depends[index]!=NULL){
       exectarget(targetlist, depends[index]);
+
+      struct stat depstats;
+      stat(thistarget->targetdata[index], &depstats);
+      time_t depmod_sec = depstats.st_mtim.tv_sec;
+      long depmod_nsec = depstats.st_mtim.tv_nsec;
+
+      if(depmod_sec > targmod_sec || 
+        (depmod_sec == targmod_sec && depmod_nsec > targmod_nsec)){
+        rebuild = true;
+      }
+
       index++;
     }
-
-    execrules(thistarget->targetrules);
+    
+    if(rebuild || access(thistarget->targetdata[0], F_OK)) 
+      execrules(thistarget->targetrules);
   }
+
   else if(access(targstr, F_OK)){
     fprintf(stderr,"target not found: %s\n", targstr);
   }
@@ -292,7 +315,7 @@ void processline (char* line) {
  */
 void print_targets(p_targets targets){
   while(targets != NULL){
-    int index = 1;
+    int index = 0;
     char** depends = targets->targetdata;
     while(depends[index]!=NULL){
       printf("%s ",depends[index]);

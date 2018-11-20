@@ -2,12 +2,13 @@
  * 23 OCT 2018, Joe Gildner
  */
 
-#include "arg_parse.h"
 #include <stdbool.h>
 #include <stdlib.h> 
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
+
+#include "arg_parse.h"
 
 /* arg_parse
  * line   a command line, possibly with arguments included, delimited by whitespace
