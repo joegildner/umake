@@ -1,4 +1,4 @@
-/* linetype.c
+/* linetype.c 
  * 9 NOV 2018, Joe Gildner
  */
 
@@ -10,7 +10,7 @@
 #include <ctype.h>
 #include "linetype.h"
 
-char validchars[11] = {'-','$','{','}','_','-','.',':',' ','=','/'};
+char validchars[12] = {'-','$','{','}','_','-','.',':',' ','=','/','*'};
 
 /*
         start     space
@@ -71,16 +71,21 @@ int linetype_q1(char* thischar){
 int linetype_targ(char* thischar){
 	if(isvalidchar(*thischar))
 		return linetype_targ(++thischar);
+	else if(*thischar == '#')
+		*thischar = '\0';
+		return LINE_TARGET;
 	else if(*thischar == '\0')
 		return LINE_TARGET;
-	else{
+	else
 		return LINE_INVALID;
-	}
 }
 
 int linetype_rule(char* thischar){
 	if(isvalidchar(*thischar))
 		return linetype_rule(++thischar);
+	else if(*thischar == '#')
+		*thischar = '\0';
+		return LINE_RULE;
 	else if(*thischar == '\0')
 		return LINE_RULE;
 	else
@@ -91,6 +96,9 @@ int linetype_rule(char* thischar){
 int linetype_var(char* thischar){
 	if(isvalidchar(*thischar))
 		return linetype_var(++thischar);
+	else if(*thischar == '#')
+		*thischar = '\0';
+		return LINE_VAR;
 	else if(*thischar == '\0')
 		return LINE_VAR;
 	else

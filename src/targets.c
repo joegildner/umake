@@ -1,5 +1,5 @@
 /* CSCI 347: targets 
-* 25 OCT 2018, Joe Gildner
+* 25 OCT 2018, Joe Gildner 
 */
 #include "targets.h"
 #include "arg_parse.h"
@@ -256,7 +256,7 @@ void processline (char* line) {
      if(varstart != NULL){
        if(*orig == '}'){
          *orig = '\0';
-         sprintf(new, "%s%c", getenv(varstart),'\0');
+         sprintf(new, "%s", getenv(varstart));
          new+=strlen(new);
          varstart = NULL;
        }

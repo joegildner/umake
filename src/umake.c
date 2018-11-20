@@ -65,6 +65,7 @@ int main(int argc, char* argv[]) {
         break;
       case LINE_VAR:
         if(addenvvar(line)) perror("setenv");
+        break;
 
     }
 
