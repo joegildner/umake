@@ -7,7 +7,10 @@
 #include <stdbool.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <sys/types.h>
 #include <sys/stat.h>
+#include <fcntl.h>
+
 #include <time.h>
 
 #include "targets.h"
@@ -241,7 +244,7 @@ void processline (char* line) {
       }
 
       case 0: {
-
+        directIO(commandArgs,argc);
         execvp(commandArgs[0],commandArgs);
         perror("execvp");
         exit(EXIT_FAILURE);
@@ -264,6 +267,38 @@ void processline (char* line) {
   }
   free(commandArgs);
 }
+
+int directIO(char** commandArgs, int argc){
+  mode_t oldmask = umask(0000);
+
+  for(int i=0; i<argc; i++){
+
+    if(!strcmp(commandArgs[i],">")){
+      close(1);
+      if(open(commandArgs[i+1], O_CREAT|O_TRUNC, 0664) == -1)
+        perror("IORedirect (>)");
+      commandArgs[i] = '\0';
+      commandArgs[i+1] = '\0';
+    }
+
+    else if(!strcmp(commandArgs[i],">>")){
+      close(1);
+      if(open(commandArgs[i+1], O_CREAT|O_APPEND, 0664) == -1)
+        perror("IORedirect (>>)");
+      commandArgs[i] = '\0';
+      commandArgs[i+1] = '\0';
+    }
+
+    else if(!strcmp(commandArgs[i],"<")){
+      close(0);
+      if(open(commandArgs[i+1], O_CREAT|O_RDONLY, 0664) == -1)
+        perror("IORedirect (<)");
+      commandArgs[i] = '\0';
+      commandArgs[i+1] = '\0';
+    }
+  }
+}
+
 
 /* Expand
  * orig    The input string that may contain variables to be expanded
