@@ -71,9 +71,10 @@ int linetype_q1(char* thischar){
 int linetype_targ(char* thischar){
 	if(isvalidchar(*thischar))
 		return linetype_targ(++thischar);
-	else if(*thischar == '#')
+	else if(*thischar == '#'){
 		*thischar = '\0';
 		return LINE_TARGET;
+	}
 	else if(*thischar == '\0')
 		return LINE_TARGET;
 	else
@@ -83,9 +84,10 @@ int linetype_targ(char* thischar){
 int linetype_rule(char* thischar){
 	if(isvalidchar(*thischar))
 		return linetype_rule(++thischar);
-	else if(*thischar == '#')
+	else if(*thischar == '#'){
 		*thischar = '\0';
 		return LINE_RULE;
+	}
 	else if(*thischar == '\0')
 		return LINE_RULE;
 	else
@@ -96,9 +98,10 @@ int linetype_rule(char* thischar){
 int linetype_var(char* thischar){
 	if(isvalidchar(*thischar))
 		return linetype_var(++thischar);
-	else if(*thischar == '#')
+	else if(*thischar == '#'){
 		*thischar = '\0';
 		return LINE_VAR;
+	}
 	else if(*thischar == '\0')
 		return LINE_VAR;
 	else

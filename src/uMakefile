@@ -4,6 +4,7 @@ me = joe
 umake: umake.o arg_parse.o linetype.o targets.o
 	${CC} -o umake-new umake.o arg_parse.o targets.o linetype.o
 	mv -i -f umake-new umake
+	ls -la
 
 umake.o: umake.c arg_parse.h
 	${CC} -c umake.c
