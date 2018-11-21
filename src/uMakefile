@@ -1,5 +1,5 @@
 CC = gcc
-me = joe
+me = Joe
 
 umake: umake.o arg_parse.o linetype.o targets.o
 	${CC} -o umake-new umake.o arg_parse.o targets.o linetype.o
@@ -26,6 +26,9 @@ install: umake
 	cp -p -f umake /home/${USER}/bin/umake
 	echo install done
 
+
+# Recursion and Environment variable testing #
+
 sentence: who says what
 	echo The end.
 
@@ -36,5 +39,27 @@ says:
 	echo says that
 
 what:
+	echo he likes cheese
+
+
+# IOredirection and timestamp dependency testing. #
+
+logdate: 
+	sleep 1
+	date > log
+
+A: B
+	echo touch A
+	touch A
+B: C
+	echo touch B
+	touch B
+C:
+	echo touch C
+	touch C
+
+work:
 	date >> log
-	ls -la log
+	ls -a > files
+	wc -l < files 
+	wc -l < files > line_count

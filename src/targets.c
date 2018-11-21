@@ -268,35 +268,52 @@ void processline (char* line) {
   free(commandArgs);
 }
 
-int directIO(char** commandArgs, int argc){
-  mode_t oldmask = umask(0000);
 
+/* directIO
+ * commandArgs  array of a command with its arguments as null terminated strings
+ * argc         total number of items in commandArgs
+ * directIO parses the array of command arguments and determines whether the process
+ * file table needs to be modified before executing the command in commandArgs. This
+ * function can handle append (>>), truncate (>), and redirect input (<).
+ */
+void directIO(char** commandArgs, int argc){
   for(int i=0; i<argc; i++){
 
-    if(!strcmp(commandArgs[i],">")){
-      close(1);
-      if(open(commandArgs[i+1], O_CREAT|O_TRUNC, 0664) == -1)
+    if(strcmp(commandArgs[i],">") == 0){
+      int outfile = open(commandArgs[i+1], O_WRONLY|O_CREAT|O_TRUNC, 0664);
+
+      if(dup2(outfile, 1) == -1)
         perror("IORedirect (>)");
-      commandArgs[i] = '\0';
-      commandArgs[i+1] = '\0';
+      
+      commandArgs[i] = NULL;
+      commandArgs[i+1] = NULL;
+      i++;
     }
 
-    else if(!strcmp(commandArgs[i],">>")){
-      close(1);
-      if(open(commandArgs[i+1], O_CREAT|O_APPEND, 0664) == -1)
+    else if(strcmp(commandArgs[i],">>") == 0){
+      int outfile = open(commandArgs[i+1], O_WRONLY|O_CREAT|O_APPEND, 0664);
+
+      if(dup2(outfile, 1) == -1)
         perror("IORedirect (>>)");
-      commandArgs[i] = '\0';
-      commandArgs[i+1] = '\0';
+
+      commandArgs[i] = NULL;
+      commandArgs[i+1] = NULL;
+      i++;
     }
 
-    else if(!strcmp(commandArgs[i],"<")){
-      close(0);
-      if(open(commandArgs[i+1], O_CREAT|O_RDONLY, 0664) == -1)
+    else if(strcmp(commandArgs[i],"<") == 0){
+      int infile = open(commandArgs[i+1], O_CREAT|O_RDONLY, 0664);
+
+      if(dup2(infile, 0) == -1)
         perror("IORedirect (<)");
-      commandArgs[i] = '\0';
-      commandArgs[i+1] = '\0';
+
+      commandArgs[i] = NULL;
+      commandArgs[i+1] = NULL;
+      i++;
     }
+
   }
+
 }
 
 
